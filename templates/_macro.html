@@ -1,0 +1,88 @@
+{% macro render_field(field) %}
+<div class="form-group row">
+      <label for="{{ field.name }}" class="col-lg-1 font-weight-bold text-primary">{{ field.label.text }}</label>
+      <div class="col-lg-7">
+          {% if field.name in ("ID", "id") %}
+            {{ field(class_="form-control font-weight-bold text-success input-sm", disabled=True) }}
+          {% else %}
+            {{ field(class_="form-control font-weight-bold text-success input-sm",**kwargs)|safe }}
+          {% endif %}
+          <ul>
+                {% for error in field.error %}
+                    <li> style="color:red;" >{{ error }}</li
+                {%endfor%}
+          </ul>
+      </div>
+</div>
+{% endmacro %}
+
+{% macro render_radio_field(field) %}
+<div class="form-group">
+      <label for="{{ field.name }}" class="col-lg-2 font-weight-bold text-primary">{{ field.label.text }}</label>
+      <div class="col-lg-10">
+          {% for subfield in field %}
+          <div class = "form-check form-check-inline radio-inline font-weight-bold text-info">
+              <label>
+               {{subfield (disabled=false)}}
+               {{subfield.label.text}}
+              </label>
+          </div>
+          {% endfor %}
+      </div>
+</div>
+{% endmacro %}
+
+{% macro xrender_field(field, label_visible=true) -%}
+
+    <div class="form-group {% if field.errors %}has-error{% endif %} {{ kwargs.pop('class_', '') }}">
+        {% if (field.type != 'HiddenField' and field.type !='CSRFTokenField') and label_visible %}
+            <label for="{{ field.id }}" class="control-label">{{ field.label }}</label>
+        {% endif %}
+        {{ field(class_='form-control', **kwargs) }}
+        {% if field.errors %}
+            {% for e in field.errors %}
+                <p class="help-block">{{ e }}</p>
+            {% endfor %}
+        {% endif %}
+    </div>
+{%- endmacro %}
+
+{% macro render_form_field(field) %}
+    {% set with_label = kwargs.pop('with_label', False) %}
+    {% set placeholder = '' %}
+    {% if not with_label %}
+        {% set placeholder = field.label.text %}
+    {% endif %}
+    <div class="control-group {% if field.errors %}error{% endif %}">
+        {% if with_label %}
+            <label for="{{ field.id }}" class="control-label">
+                {{ field.label.text }}{% if field.flags.required %} *{% endif %}:
+            </label>
+        {% endif %}
+        <div class="controls">
+            {% set class_ = kwargs.pop('class_', '') %}
+            {% if field.flags.required %}
+                {% set class_ = class_ + ' required' %}
+            {% endif %}
+            {% if field.type == 'BooleanField' %}
+                <label class="checkbox">
+                    {{ field(class_=class_, **kwargs) }}
+                    {{ field.label.text|safe }}
+                </label>
+            {% else %}
+                {% if field.type in ('TextField', 'TextAreaField', 'PasswordField') %}
+                    {% set class_ = class_ + ' input-xlarge' %}
+                {% elif field.type == 'FileField' %}
+                    {% set class_ = class_ + ' input-file' %}
+                {% endif %}
+                {{ field(class_=class_, placeholder=placeholder, **kwargs) }}
+            {% endif %}
+            {% if field.errors %}
+                <span class="error help-inline">{{ field.errors|join(', ') }}</span>
+            {% endif %}
+            {% if field.description %}
+                <p class="help-block">{{ field.description|safe }}</p>
+            {% endif %}
+        </div>
+    </div>
+{% endmacro %}

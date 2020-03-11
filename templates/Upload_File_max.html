@@ -1,0 +1,52 @@
+{% block header %}
+{% endblock %}
+{% block content %}
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.5/css/bootstrap.min.css" rel="stylesheet"/>
+	<link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css" rel="stylesheet">
+	<!--<link href="https://unpkg.com/bootstrap-table@1.15.5/dist/bootstrap-table.min.css" rel="stylesheet">-->
+	<link href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css" rel="stylesheet">
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.12/css/dataTables.bootstrap4.min.css" rel="stylesheet"/>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.12/js/jquery.dataTables.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.13/js/dataTables.bootstrap4.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+
+<form action="/processupload" method="POST" enctype="multipart/form-data" class="vcenter">
+    <!-- <div class="form-group" text-center> -->
+        
+    <!-- 	<input class="form-control" placeholder="File Name" id="vname" name="vname"> -->
+    <div class="form-row align-items-center">
+        <div class="col-6">
+            <span class="btn btn-success fileinput-button">
+                <i class="glyphicon glyphicon-plus"></i>
+                <input type="file" name="files[]" id="fileupload1" placeholder="File Name" multiple >
+            </span>
+        </div>
+
+
+        <div class="col-3">
+                  <input class="form-check-input" type="radio" name="rs" id="exampleRadios1" value="1" checked>
+                  <label class="form-check-label" for="exampleRadios1">
+                    Encrypte by login password
+                  </label>
+
+                  <input class="form-check-input" type="radio" name="rs" id="exampleRadios3" value="2" checked>
+                  <label class="form-check-label" for="exampleRadios3">
+                    Encrypte by group password
+                  </label>
+                  <input class="form-check-input" type="radio" name="rs" id="exampleRadios2" value="3">
+                    <label class="form-check-label" for="exampleRadios2">
+                    No Encryption
+                    </label>
+        </div>
+
+        <div class="col-auto">
+                <button type="submit" class="btn btn-primary start">
+                    <i class="glyphicon glyphicon-upload"></i>
+                    <span>Start upload</span>
+                </button>
+        </div>
+    </div>
+</form>	
+
+{% endblock %}

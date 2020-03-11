@@ -1,0 +1,215 @@
+{% extends 'Head.html' %}
+{% block title %}Download and Upload Example{% endblock %}
+{% block content %}
+<div class="container">
+	<table class='display table-striped' id="filetest" cellspacing="0" width="100%"
+		data-toggle="table"
+  		data-search="false"
+  		data-show-columns="true">
+			<thead>
+					<tr>
+						<th>Download file (size kb)</th>
+						<th>Date Upload</th>
+						<th>UploadBy</th>
+						<!--<th>Project Ref</th>-->
+						<th>Encrypt</th>
+						<th>Size (Mb)</th>
+						<th># download</th>
+						<th>Manage</th>
+					</tr>
+			</thead>
+			<tbody>
+			{% for row in data %}
+			
+			   <tr>
+				  <td width="35%" data-toggle="tooltip" title="Click to download!"><a href={{ url_for("download", fn = row.Document_ID) }}>{{ row.Document_name }}</a> </td>
+				  <td>{{ row.Date_Upload }} </td>
+				  <td>{{ row.Owner_ID }} </td>
+				  <!--<td>{{ row.Reference_Project }} </td>-->
+				   <td>{{ row.ec_type }} </td>
+				   <td>{{ '{:,}'.format(row.Size|int) }} </td>
+				   <td>{{ row.Tot_download | int}}</td>
+				  <td>
+
+					  <div class="input-group"><a href={{ url_for("editit", job = "edit", fn = row.Document_ID) }}><i data-toggle="tooltip" title="Edit file."class="glyphicon glyphicon-pencil" style="font-size:12px;"></i></a></div>
+					  <div class="input-group"><i id="X2" style="color:blue;" data-toggle="modal" data-whatever={{row.Owner_ID}} data-cont="Please comment here" data-target="#dialogModal" title="Check for Comments" class="glyphicon glyphicon-th-list btn-read" style="font-size:12px;" value={{row.Document_ID}}></i></div>
+					  <div class="input-group"><i id="X1" data-toggle="modal" data-whatever={{row.Owner_ID}} data-cont="Please comment here" data-target="#exampleModal" title="Add Comment!" class="glyphicon glyphicon-comment btn-edit" style="font-size:12px; color:blue;" value={{row.Document_ID}}></i></div>
+				  </td>
+				</tr>
+
+			{% endfor %}
+			</tbody>
+			<tfoot>
+					<tr>
+						<th>Download</th>
+						<th>Date Upload</th>
+						<th>UploadBy</th>
+						<!--<th>Project Ref</th>-->
+						<th>Encrypt</th>
+						<th>Size (Mb)</th>
+						<th>Manage</th>
+					</tr>
+			</tfoot>
+	</table>
+
+</div>
+
+
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">New message</h5>
+        <button id="B3" type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="form-group">
+            <label for="recipient-name" class="col-form-label">Recipient:</label>
+            <input type="text" class="form-control" id="recipient-name">
+          </div>
+          <div class="form-group">
+            <label for="message-text" class="col-form-label">Message:</label>
+            <textarea rows="10" class="form-control" id="message-text"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button id="B1" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button id="B2" type="button" class="btn btn-primary">Send message</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="dialogModal" tabindex="-1" role="dialog" aria-labelledby="M2" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header pt-reduced pb-reduced ">
+        <h6 class="modal-title" id="M2">Document Comments</h6>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        ...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+<!--$(document).ready(function() {-->
+	<!--$('#filetest').DataTable({-->
+        <!--"order": [[ 1, "desc" ]]-->
+    <!--});-->
+<!--});-->
+///////////////
+$(document).ready(function() {
+    $('#filetest').DataTable( {
+    	"order": [ 1, "desc" ],
+        "columnDefs": [
+            {
+                // The `data` parameter refers to the data for the cell (defined by the
+                // `data` option, which defaults to the column being worked with, in
+                // this case `data: 0`.
+                "render": function ( data, type, row ) {
+                    return data +' ('+ row[4]+')';
+                },
+                "targets": 0
+            },
+            { "visible": false,  "targets": [ 4 ] }
+        ]
+    } );
+} );
+
+///////////////
+$("#filetest").on('click', '.btn-edit', function(event) {
+	  var button = $(event.relatedTarget) // Button that triggered the modal
+	  var recipient = $(this).data('whatever') // Extract info from data-* attributes
+	  window.file_id = $(this).attr('value');
+	  console.log(file_id);
+	  // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+	  // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+	  var modal = $("#exampleModal");
+	  modal.find('.modal-title').text('New message to ' + recipient + ' : ' + (file_id));
+	  modal.find('.modal-body input').val(recipient);
+});
+
+$('#B2').on('click', function() {
+  var msg = $("#message-text").val();
+  alert('Saved!! :' + msg + "fileid: " + window.file_id);
+
+	//alert("Ajax running");
+	//alert($('#my_playlist_data').data("playlist"))
+	$.ajax({
+	url: '/add_dialog',
+	type: 'POST',
+	data: JSON.stringify({'ID': window.file_id, 'msg': msg }),
+	success:
+		function(data) {
+			if (data.error) {
+			console.log(data['error']);
+			//$('#ErrorAlert').html(data['error']).show();
+			//$('#SuccessAlert').hide();
+			}
+		else {
+
+			//$('#SuccessAlert').html(data['data']).show();
+			//$('#ErrorAlert').hide();
+			console.log(data['data']);
+			setTimeout(function(){// wait for 5 secs(2)
+			location.reload(); // then reload the page.(3)
+				}, 3000);
+
+		};
+
+	},
+
+	contentType: "application/json",
+	dataType: 'json'
+	}) // ajax
+
+  $("#message-text").val('');
+  $('#exampleModal').modal('hide');
+  event.preventDefault();
+});
+
+$('#B1,#B3').on('click', function() {
+  $("#message-text").val('');
+  $('#exampleModal').modal('hide');
+});
+
+$("#filetest").on('click', '.btn-read', function(event) {
+	  var button = $(event.relatedTarget); // Button that triggered the modal
+	  var recipient = $(this).data('whatever'); // Extract info from data-* attributes
+	  window.f_id = $(this).attr('value');
+	  console.log(f_id);
+	  $.ajax({
+	  	  url: '/get_dialog',
+		  type: 'POST',
+		  data: JSON.stringify({'ID': window.f_id}),
+		  success: function(data) {
+			if (data.error) {
+				console.log(data.error);
+			}
+			else {
+				console.log('Success');
+				var modal = $("#dialogModal");
+	  			modal.find('.modal-body').html(data.data);
+			};
+
+	  	  },
+		  dataType: "json",
+		  contentType: "application/json",
+	  }); //ajax
+	  event.preventDefault();
+});
+</script>
+{% endblock %}

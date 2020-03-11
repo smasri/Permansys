@@ -1,0 +1,20 @@
+{% block title %}Download and Upload Example{% endblock %}
+{% block content %}
+
+<form method="post" action="/{{route}}">
+    <fieldset>
+    {{ form.csrf_token }}
+        {% for field in form if field.name != 'csrf_token' %}
+...     <div>
+...         {{ field.label }}
+...         {{ field }}
+...         {% for error in field.errors %}
+...             <div class="error">{{ error }}</div>
+...         {% endfor %}
+...     </div>
+...     {% endfor %}
+
+   <button type="submit" />
+    </fieldset>
+</form>
+{% endblock %}

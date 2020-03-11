@@ -1,0 +1,164 @@
+{% extends 'Headupload.html' %}
+{% block title %}Document Management{% endblock %}
+{% block content %}
+{% from '_macro.html' import render_field, render_radio_field %}
+
+<div class="container">
+    <div><h5>{{ tajuk }}</h5></div>
+ <form id="form_contract" action={{ formaction }} method='POST'>
+
+     {% for iz in form %}
+        {% if iz.label.text not in ("ID") %}
+            {{ render_field(iz, placeholder="Please enter " + iz.label.text) }}
+        {% else %}
+            {{ render_field(iz) }}
+
+        {% endif %}
+     {% endfor %}
+
+   <div class="form-group">
+       <button type="submit" class="btn btn-primary login-btn btn-block">Submit</button>
+   </div>
+</form>
+    {{ docTable }}
+</div>
+
+
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">New message</h5>
+        <button id="B3" type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="form-group">
+            <label for="recipient-name" class="col-form-label">Recipient:</label>
+            <input type="text" class="form-control" id="recipient-name">
+          </div>
+          <div class="form-group">
+            <label for="message-text" class="col-form-label">Message:</label>
+            <textarea rows="10" class="form-control" id="message-text"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button id="B1" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button id="B2" type="button" class="btn btn-primary">Send message</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="dialogModal" tabindex="-1" role="dialog" aria-labelledby="M2" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header pt-reduced pb-reduced ">
+        <h6 class="modal-title" id="M2">Document Comments</h6>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        ...
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="adds_ajax" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+$(document).ready(function() {
+  $('#Joblist').DataTable({"order": [ 1, "desc" ]});
+  $("#adds_ajax").click(function () {
+        var sdata = table.rows(".active").ids();
+        var newarray='';
+        //alert(sdata);
+        for (var i=0; i < sdata.length ;i++){
+           //alert("data: " + sdata[i]);
+           newarray = newarray + ", " + sdata[i];
+        }
+
+        var L_selected = newarray.substring(1)
+        var spl = L_selected;
+        var dd = confirm("Are you sure you want to add jobs from the current list?: " + spl );
+        if (dd) {
+            //alert("Ajax running");
+            //alert($('#my_playlist_data').data("playlist"))
+            $.ajax({
+              url: '/add_into_list',
+              type: 'POST',
+              data: JSON.stringify({'ID': L_selected,
+                                    'Job': 'Risk',
+                                    'Order': 'addlist',
+                                    'GroupUsed': $('#my_group_data').data("group"),
+                                    'Ladmin': 'Admin'
+              }),
+              success:
+              function(data) {
+                  if (data.error) {
+
+                  $('#ErrorAlert').html(data['error']).show();
+                  $('#SuccessAlert').hide();
+                  }
+                  else {
+
+                      $('#SuccessAlert').html(data['data']).show();
+                      $('#ErrorAlert').hide();
+
+                      setTimeout(function(){  // wait for 5 secs(2)
+                        location.reload(); // then reload the page.(3)
+                      }, 5000);
+                  };
+
+              }, //function data
+
+              contentType: "application/json",
+              dataType: 'json'
+            }) //.ajax
+          }; //dd
+          event.preventDefault();
+      }); //adds_ajax
+
+    $("#form_upload_button").click(function() {
+        event.preventDefault();
+        var fd = new FormData($('#form_upload')[0]);
+        fd.append('jobtype', $('#jobtype').val());
+        fd.append('jobid', $('#ID').val());
+        fd.append('mainid', $('#ID').val());
+        fd.append('group', 'mydocument');
+        fd.append('admin_status', 'Admin');
+        fd.append('rs', $("input[name='rs']:checked").val());
+        var dd = confirm("Are you sure you want to add the file(s) ?");
+        if (dd) {
+            $.ajax({
+              url: '/upload_ajax',
+              type: 'POST',
+              data: fd,
+              contentType: false,
+              processData: false,
+              dataType: 'json'
+
+            }).done(function(data, textStatus, jqXHR){
+            console.log(data);
+            console.log(textStatus);
+            console.log(jqXHR);
+            console.log('Success!');
+            //$("#resultFilename").text(data['name']);
+            //$("#resultFilesize").text(data['size']);
+            setTimeout(function(){  // wait for 5 secs(2)
+                        location.reload(); // then reload the page.(3)
+                      }, 1000);
+            }).fail(function(data){
+            alert('error!');
+            });
+        }; // if dd
+    });
+}); //document
+</script>
+{% endblock %}

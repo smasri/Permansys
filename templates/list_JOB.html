@@ -1,0 +1,211 @@
+{% extends 'Headfl.html' %}
+{% block title %}Download and Upload Example{% endblock %}
+{% block content %}
+{% from '_macro.html' import render_field, render_radio_field %}
+<style>
+	/* override Bootstrap's container */
+	.container-fluid {
+		padding-right:1px;
+		padding-left:20px;
+		margin-right:auto;
+		margin-left:auto
+	 }
+	.dataTables_filter {
+   		float: left !important;
+	}
+    </style>
+<div class="container-fluid">
+	<a href={{url_for("job.addnew", job = "JOBD") }}><button id="add_ajax" type="submit" class="btn btn-primary" >Add new item</button></a>
+	<table class='display compact' id="filetest" cellspacing="0" width="100%">
+			<thead>
+					<tr>
+						<th>ID</th>
+						<th>Date Created</th>
+						<th>Name</th>
+						<th>Objective</th>
+						<th>Deliverables</th>
+						<th>Key Process</th>
+						<th>Report to ID</th>
+						<th>File_RefD</th>
+						<th>Yr/Qtr</th>
+						<th>Note</th>
+					</tr>
+			</thead>
+			<tbody>
+			{% for row in data %}
+
+			   <tr>
+				   <td width="1%" data-toggle="tooltip" title="Click for details!"><a href={{ url_for("job.showdetail", job = "JOBD",fn = row.id) }}>{{ row.id }}</a> </td>
+                   <td>{{ row.date_created }} </td>
+				   <td>{{ row.job_name }} </td>
+				   <td>{{ row.job_objective}} </td>
+				   <td>{{ row.job_deliverables}} </td>
+				   <td>{{ row.job_key_process }} </td>
+				   <td>{{ row.job_reportto_id }} </td>
+				   <td>{{ row.job_file_ref }} </td>
+				   <td>{{ row.year }}/{{ row.quarter }} </td>
+				   <td>
+					  <div class="input-group"><a href={{url_for("job.showdetail", job = "JOBD", fn = row.id) }}><i data-toggle="tooltip" title="Edit file."class="glyphicon glyphicon-pencil" style="font-size:12px;"></i></a></div>
+					  <div class="input-group"><i id="X2" style="color:blue;" data-toggle="modal" data-whatever={{row.owner_id}} data-cont="Please comment here" data-target="#dialogModal" title="Check for Comments" class="glyphicon glyphicon-th-list btn-read" style="font-size:12px;" value={{row.id}}></i></div>
+					  <div class="input-group"><i id="X1" data-toggle="modal" data-whatever={{row.owner_id}} data-cont="Please comment here" data-target="#exampleModal" title="Add Comment!" class="glyphicon glyphicon-comment btn-edit" style="font-size:12px; color:blue;" value={{row.id}}></i></div>
+				   </td>
+				</tr>
+
+			{% endfor %}
+			</tbody>
+			<tfoot>
+					<tr>
+						<th>ID</th>
+						<th>Date Created</th>
+						<th>Name</th>
+						<th>Objective</th>
+						<th>Deliverables</th>
+						<th>Key Process</th>
+						<th>Report to ID</th>
+						<th>File_RefD</th>
+						<th>Note</th>
+						<th>Yr/Qtr</th>
+					</tr>
+			</tfoot>
+	</table>
+
+</div>
+
+
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">New message</h5>
+        <button id="B3" type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="form-group">
+            <label for="recipient-name" class="col-form-label">Recipient:</label>
+            <input type="text" class="form-control" id="recipient-name">
+          </div>
+          <div class="form-group">
+            <label for="message-text" class="col-form-label">Message:</label>
+            <textarea rows="10" class="form-control" id="message-text"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button id="B1" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button id="B2" type="button" class="btn btn-primary">Send message</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="dialogModal" tabindex="-1" role="dialog" aria-labelledby="M2" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header pt-reduced pb-reduced ">
+        <h6 class="modal-title" id="M2">Document Comments</h6>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        ...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+$(document).ready(function() {
+	  $('#filetest').DataTable({"order": [ 1, "desc" ]});
+});
+
+<!--$("#filetest").on('click', '.btn-edit', function(event) {-->
+	  <!--var button = $(event.relatedTarget); // Button that triggered the modal-->
+	  <!--var recipient = $(this).data('whatever'); // Extract info from data-* attributes-->
+	  <!--window.file_id = $(this).attr('value');-->
+	  <!--console.log(file_id);-->
+	  <!--// If necessary, you could initiate an AJAX request here (and then do the updating in a callback).-->
+	  <!--// Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.-->
+	  <!--var modal = $("#exampleModal");-->
+	  <!--modal.find('.modal-title').text('New message to ' + recipient + ' : ' + (file_id));-->
+	  <!--modal.find('.modal-body input').val(recipient);-->
+<!--});-->
+
+<!--$('#B2').on('click', function() {-->
+  <!--var msg = $("#message-text").val();-->
+  <!--alert('Saved!! :' + msg + "fileid: " + window.file_id);-->
+
+	<!--//alert("Ajax running");-->
+	<!--//alert($('#my_playlist_data').data("playlist"))-->
+	<!--$.ajax({-->
+	<!--url: '/add_dialog',-->
+	<!--type: 'POST',-->
+	<!--data: JSON.stringify({'ID': window.file_id, 'msg': msg }),-->
+	<!--success:-->
+		<!--function(data) {-->
+			<!--if (data.error) {-->
+			<!--console.log(data['error']);-->
+			<!--//$('#ErrorAlert').html(data['error']).show();-->
+			<!--//$('#SuccessAlert').hide();-->
+			<!--}-->
+		<!--else {-->
+
+			<!--//$('#SuccessAlert').html(data['data']).show();-->
+			<!--//$('#ErrorAlert').hide();-->
+			<!--console.log(data['data']);-->
+			<!--setTimeout(function(){// wait for 5 secs(2)-->
+			<!--location.reload(); // then reload the page.(3)-->
+				<!--}, 3000);-->
+
+		<!--};-->
+
+	<!--},-->
+
+	<!--contentType: "application/json",-->
+	<!--dataType: 'json'-->
+	<!--}) // ajax-->
+
+  <!--$("#message-text").val('');-->
+  <!--$('#exampleModal').modal('hide');-->
+  <!--event.preventDefault();-->
+<!--});-->
+
+<!--$('#B1,#B3').on('click', function() {-->
+  <!--$("#message-text").val('');-->
+  <!--$('#exampleModal').modal('hide');-->
+<!--});-->
+
+<!--$("#filetest").on('click', '.btn-read', function(event) {-->
+	  <!--var button = $(event.relatedTarget); // Button that triggered the modal-->
+	  <!--var recipient = $(this).data('whatever'); // Extract info from data-* attributes-->
+	  <!--window.f_id = $(this).attr('value');-->
+	  <!--console.log(f_id);-->
+	  <!--$.ajax({-->
+	  	  <!--url: '/get_dialog',-->
+		  <!--type: 'POST',-->
+		  <!--data: JSON.stringify({'ID': window.f_id}),-->
+		  <!--success: function(data) {-->
+			<!--if (data.error) {-->
+				<!--console.log(data.error);-->
+			<!--}-->
+			<!--else {-->
+				<!--console.log('Success');-->
+				<!--var modal = $("#dialogModal");-->
+	  			<!--modal.find('.modal-body').html(data.data);-->
+			<!--};-->
+
+	  	  <!--},-->
+		  <!--dataType: "json",-->
+		  <!--contentType: "application/json",-->
+	  <!--}); //ajax-->
+	  <!--event.preventDefault();-->
+<!--});-->
+</script>
+{% endblock %}
